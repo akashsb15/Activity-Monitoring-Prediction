@@ -1,22 +1,51 @@
-library(dpylr)
+library(dplyr)
+library(caret)
+library(rpart)
+library(randomForest)
 
-## Separate the records with new window
+training <- read.csv("./Coursera/R/data/Course8/Activity-Monitoring-Prediction/data/pml-training.csv", 
+                     na.strings=c("NA","#DIV/0!", ""))
+testing <- read.csv("./Coursera/R/data/Course8/Activity-Monitoring-Prediction/data/pml-testing.csv", 
+                     na.strings=c("NA","#DIV/0!", ""))
 
-training_yes <- filter(training, new_window == "yes")
-training_no <- filter(training, new_window == "no")
+## Delete rows with NA
 
-## Remove columns with no information (empty and NAs)
+training <-training[,colSums(is.na(training)) == 0]
+training <-training[,-c(1,3:7)]
 
-colNames <- names(training_no)
-drop = c("")
+testing <-testing[,colSums(is.na(testing)) == 0]
+testing <-testing[,-c(1,3:7)]
 
-for (i in seq_along(colNames)) {
-  if (training_no[1,colNames[i]] == "" || is.na(training_no[1,colNames[i]])) {
-    drop <- append(drop, c(colNames[i]))
-  }
-}
+set.seed(123)
 
-drop <- drop[2:length(drop)]
-training_no <- training_no[!(colNames %in% drop)]
+subsamples <- createDataPartition(y=training$classe, p=0.75, list=FALSE)
+subTraining <- training[subsamples, ] 
+subTesting <- training[-subsamples, ]
 
-## Splitting the available training data into train, test and val
+plot(subTraining$classe, col="blue", main="Bar Plot of levels of the variable classe within the subTraining 
+     data set", xlab="classe levels", ylab="Frequency")
+
+
+model1 <- rpart(classe ~ ., data=subTraining, method="class")
+
+# Predicting:
+prediction1 <- predict(model1, subTesting, type = "class")
+
+# Plot of the Decision Tree
+#rpart.plot(model1, main="Classification Tree", extra=102, under=TRUE, faclen=0)
+
+confusionMatrix(prediction1, subTesting$classe)
+
+
+model2 <- randomForest(classe ~. , data=subTraining, method="class")
+
+# Predicting:
+prediction2 <- predict(model2, subTesting, type = "class")
+
+# Test results on subTesting data set:
+confusionMatrix(prediction2, subTesting$classe)
+
+
+# Predicting:
+prediction1 <- predict(model1, testing, type = "class")
+prediction2 <- predict(model2, testing, type = "class")
