@@ -76,6 +76,7 @@ modelTraining <- training[train, ]
 modelTesting <- training[-train, ]
 ```
 
+The above code also split the data into training and testing sets (80:20).
 ## Models
 
 Since, this problem requires a classification, we could try a decision tree first. However, this might give an overfitted model.
@@ -87,7 +88,7 @@ confusionMatrix(predictionTree, modelTesting$classe)$overall
 ```
 
 
-The accuracy is pretty good as it is achieved with minimal data preprocessing. Lets see if Random Forests do any better.
+The accuracy is pretty good as it is achieved with minimal data preprocessing and also suggests that overfitting is not a problem. Lets see if Random Forests do any better.
 
 ```{r randomForest,warning=FALSE,message=FALSE,eval=FALSE}
 modelForest <- randomForest(classe ~. , modelTraining, method = "class")
@@ -95,7 +96,7 @@ predictionForest <- predict(modelForest, modelTesting, type = "class")
 confusionMatrix(predictionForest, modelTesting$classe)$overall
 ```
 
-`
+
 Overall Statistics
 
                Accuracy : 0.9947   
@@ -109,8 +110,7 @@ Overall Statistics
                   Kappa : 0.9933      
                   
  Mcnemar's Test P-Value : NA   
- 
-`
+
 
 We clearly see that the accuracy with this model is much higher, almost a 100 percent. The predictions on the test data look like this.
 

@@ -173,9 +173,7 @@ set.seed(12321)
 train &lt;- createDataPartition(training$classe, p=0.8, list=FALSE)
 modelTraining &lt;- training[train, ] 
 modelTesting &lt;- training[-train, ]</code></pre>
-</div>
-<div id="models" class="section level2">
-<h2>Models</h2>
+<p>The above code also split the data into training and testing sets (80:20). ## Models</p>
 <p>Since, this problem requires a classification, we could try a decision tree first. However, this might give an overfitted model.</p>
 <pre class="r"><code>modelTree &lt;- rpart(classe ~ ., modelTraining, method=&quot;class&quot;)
 predictionTree &lt;- predict(modelTree, modelTesting, type = &quot;class&quot;)
@@ -184,11 +182,11 @@ confusionMatrix(predictionTree, modelTesting$classe)$overall</code></pre>
 ##   7.313281e-01   6.587692e-01   7.171607e-01   7.451500e-01   2.844762e-01 
 ## AccuracyPValue  McnemarPValue 
 ##   0.000000e+00   8.830515e-34</code></pre>
-<p>The accuracy is pretty good as it is achieved with minimal data preprocessing. Lets see if Random Forests do any better.</p>
+<p>The accuracy is pretty good as it is achieved with minimal data preprocessing and also suggests that overfitting is not a problem. Lets see if Random Forests do any better.</p>
 <pre class="r"><code>modelForest &lt;- randomForest(classe ~. , modelTraining, method = &quot;class&quot;)
 predictionForest &lt;- predict(modelForest, modelTesting, type = &quot;class&quot;)
 confusionMatrix(predictionForest, modelTesting$classe)$overall</code></pre>
-<p>` Overall Statistics</p>
+<p>Overall Statistics</p>
 <pre><code>           Accuracy : 0.9947   
            
              95% CI : (0.9922, 0.9965)
@@ -200,7 +198,6 @@ P-Value [Acc &gt; NIR] : &lt; 2.2e-16
               Kappa : 0.9933      
               </code></pre>
 <p>Mcnemar’s Test P-Value : NA</p>
-<p>`</p>
 <p>We clearly see that the accuracy with this model is much higher, almost a 100 percent. The predictions on the test data look like this.</p>
 <pre class="r"><code>predictionForest &lt;- predict(modelForest, testing, type = &quot;class&quot;)
 predictionForest</code></pre>
