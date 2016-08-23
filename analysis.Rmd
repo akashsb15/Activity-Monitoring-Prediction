@@ -81,7 +81,7 @@ The above code also split the data into training and testing sets (80:20).
 
 Since, this problem requires a classification, we could try a decision tree first. However, this might give an overfitted model.
 
-```{r decisionTree,warning=FALSE,message=FALSE}
+```{r decisionTree,warning=FALSE}
 modelTree <- rpart(classe ~ ., modelTraining, method="class")
 predictionTree <- predict(modelTree, modelTesting, type = "class")
 confusionMatrix(predictionTree, modelTesting$classe)$overall
